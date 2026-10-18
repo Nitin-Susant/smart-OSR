@@ -205,14 +205,31 @@ fun SelectionCanvasScreen(
                                     tapPt, containerSize, displayLayout, zoom, pan
                                 )
                                 if (doc != null) {
-                                    val items = if (selectionTool == SelectionTool.RECTANGLE) {
-                                        doc.words
-                                    } else {
-                                        doc.getItemsForGranularity(granularity)
-                                    }
-                                    val hit = OcrGeometryUtils.hitTest(normPt, items)
-                                    if (hit != null) {
-                                        viewModel.toggleItemSelection(hit)
+                                    when (granularity) {
+                                        SelectionGranularity.WORD -> {
+                                            val hit = OcrGeometryUtils.hitTest(normPt, doc.words)
+                                            if (hit != null) {
+                                                viewModel.toggleItemSelection(hit)
+                                            }
+                                        }
+                                        SelectionGranularity.LINE -> {
+                                            // In Line mode, clicking on a word or line selects only that visual line
+                                            val wordHit = OcrGeometryUtils.hitTest(normPt, doc.words)
+                                            if (wordHit != null) {
+                                                viewModel.selectLineAt(wordHit)
+                                            } else {
+                                                val lineHit = OcrGeometryUtils.hitTest(normPt, doc.lines)
+                                                if (lineHit != null) {
+                                                    viewModel.toggleItemSelection(lineHit)
+                                                }
+                                            }
+                                        }
+                                        SelectionGranularity.PARAGRAPH -> {
+                                            val hit = OcrGeometryUtils.hitTest(normPt, doc.blocks)
+                                            if (hit != null) {
+                                                viewModel.toggleItemSelection(hit)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -812,7 +829,7 @@ private suspend fun androidx.compose.ui.input.pointer.PointerInputScope.detectCa
                 currentPos = change.position
                 val dragDistance = (currentPos - startPos).getDistance()
 
-                if (selectionTool == SelectionTool.RECTANGLE) {
+                if (selectionTool == SelectionTool.RECTANGLE || !isZoomed) {
                     if (!isDragging && dragDistance > touchSlop) {
                         isDragging = true
                         onDragStart(startPos)

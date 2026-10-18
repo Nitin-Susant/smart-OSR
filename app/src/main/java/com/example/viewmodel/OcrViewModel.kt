@@ -148,6 +148,26 @@ class OcrViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun selectLineAt(targetWord: OcrItem) {
+        val doc = _ocrDocument.value ?: return
+        recordUndoState()
+
+        val targetLineId = targetWord.parentLineId ?: "line_${targetWord.blockIndex}_${targetWord.lineIndex}"
+        val lineWords = doc.words.filter {
+            it.parentLineId == targetLineId || (it.blockIndex == targetWord.blockIndex && it.lineIndex == targetWord.lineIndex)
+        }
+        val lineWordIds = lineWords.map { it.id }.toSet()
+        if (lineWordIds.isEmpty()) return
+
+        val current = _selectedItemIds.value.toMutableSet()
+        if (current.containsAll(lineWordIds)) {
+            current.removeAll(lineWordIds)
+        } else {
+            current.addAll(lineWordIds)
+        }
+        _selectedItemIds.value = current
+    }
+
     fun toggleItemSelection(item: OcrItem) {
         val doc = _ocrDocument.value ?: return
         recordUndoState()
@@ -162,8 +182,12 @@ class OcrViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             SelectionGranularity.LINE -> {
-                // Tapping line selects or deselects all words in that line
-                val lineWordIds = doc.words.filter { it.parentLineId == item.id }.map { it.id }.toSet()
+                // Tapping line selects or deselects all words in that visual line
+                val targetLineId = item.parentLineId ?: item.id
+                val lineWords = doc.words.filter {
+                    it.parentLineId == targetLineId || (it.blockIndex == item.blockIndex && it.lineIndex == item.lineIndex)
+                }
+                val lineWordIds = lineWords.map { it.id }.toSet()
                 if (lineWordIds.isNotEmpty()) {
                     if (current.containsAll(lineWordIds)) {
                         current.removeAll(lineWordIds)

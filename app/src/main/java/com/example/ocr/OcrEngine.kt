@@ -30,7 +30,10 @@ class OcrEngine(private val context: Context) {
 
             val inputImage = InputImage.fromFilePath(context, uri)
             val visionText = processInputImage(inputImage)
-            val doc = convertVisionText(visionText, inputImage.width, inputImage.height)
+            val rotation = inputImage.rotationDegrees
+            val effectiveWidth = if (rotation == 90 || rotation == 270) inputImage.height else inputImage.width
+            val effectiveHeight = if (rotation == 90 || rotation == 270) inputImage.width else inputImage.height
+            val doc = convertVisionText(visionText, effectiveWidth, effectiveHeight)
             Result.success(doc)
         } catch (e: Exception) {
             Result.failure(e)

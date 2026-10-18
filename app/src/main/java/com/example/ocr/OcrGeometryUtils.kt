@@ -8,6 +8,72 @@ import kotlin.math.min
 object OcrGeometryUtils {
 
     /**
+     * Determines if a word token ends a sentence based on terminal punctuation (. ? !),
+     * accounting for optional trailing quotes/brackets, while ignoring common abbreviations.
+     */
+    fun isSentenceEndWord(wordText: String): Boolean {
+        val trimmed = wordText.trim()
+        if (trimmed.isEmpty()) return false
+
+        // Strip trailing quotes, parentheses, brackets, or apostrophes
+        val stripped = trimmed.trimEnd('"', '\'', '”', '’', ')', ']', '}')
+        if (stripped.isEmpty()) return false
+
+        val lastChar = stripped.last()
+        if (lastChar == '?' || lastChar == '!') return true
+        if (lastChar == '.') {
+            val lower = stripped.lowercase()
+            val commonAbbreviations = setOf(
+                "mr.", "mrs.", "ms.", "dr.", "prof.", "sr.", "jr.", "vs.", "e.g.", "i.e.", "etc.", "st.", "no.", "vol."
+            )
+            if (lower in commonAbbreviations) return false
+
+            // Ignore single-letter initials (e.g., "J.", "A.")
+            if (stripped.length == 2 && stripped[0].isLetter()) return false
+
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Finds all words belonging to the complete sentence containing [targetWord],
+     * which may span multiple visual lines within the same paragraph/block.
+     */
+    fun findSentenceWordsForWord(targetWord: OcrItem, allWords: List<OcrItem>): List<OcrItem> {
+        val blockWords = allWords
+            .filter { it.blockIndex == targetWord.blockIndex }
+            .sortedWith(compareBy<OcrItem> { it.lineIndex }.thenBy { it.elementIndex })
+
+        if (blockWords.isEmpty()) return listOf(targetWord)
+
+        val targetIdx = blockWords.indexOfFirst { it.id == targetWord.id }
+        if (targetIdx == -1) return listOf(targetWord)
+
+        // Traverse backwards to find start of sentence
+        var startIdx = targetIdx
+        while (startIdx > 0) {
+            val prevWord = blockWords[startIdx - 1]
+            if (isSentenceEndWord(prevWord.text)) {
+                break
+            }
+            startIdx--
+        }
+
+        // Traverse forwards to find end of sentence
+        var endIdx = targetIdx
+        while (endIdx < blockWords.size - 1) {
+            val curWord = blockWords[endIdx]
+            if (isSentenceEndWord(curWord.text)) {
+                break
+            }
+            endIdx++
+        }
+
+        return blockWords.subList(startIdx, endIdx + 1)
+    }
+
+    /**
      * Calculates the fitted image display rectangle (like ContentScale.Fit) inside the container.
      */
     data class DisplayLayout(
@@ -113,7 +179,18 @@ object OcrGeometryUtils {
         items: List<OcrItem>
     ): List<OcrItem> {
         return items.filter { item ->
-            selectionRect.intersects(item.normalizedBox)
+            val box = item.normalizedBox
+            if (!selectionRect.intersects(box)) return@filter false
+            val overlapLeft = max(selectionRect.left, box.left)
+            val overlapRight = min(selectionRect.right, box.right)
+            val overlapTop = max(selectionRect.top, box.top)
+            val overlapBottom = min(selectionRect.bottom, box.bottom)
+            val overlapArea = max(0f, overlapRight - overlapLeft) * max(0f, overlapBottom - overlapTop)
+            val itemArea = box.width * box.height
+            // Word is selected if its center point falls inside the selection box,
+            // or if at least 8% of the word's bounding box area is covered by the box.
+            // This prevents accidental 1-pixel edge grazes on adjacent lines.
+            selectionRect.contains(box.centerX, box.centerY) || (itemArea > 0f && (overlapArea / itemArea) >= 0.08f)
         }
     }
 
@@ -144,20 +221,31 @@ object OcrGeometryUtils {
         val sb = StringBuilder()
         var lastLine = -1
         var lastBlock = -1
+        var lastWordText = ""
+
+        val noLeadingSpacePunctuation = setOf(",", ".", "!", "?", ":", ";", ")", "]", "}", "%")
+        val noTrailingSpacePunctuation = setOf("(", "[", "{")
 
         for (word in sorted) {
+            val wordText = word.text.trim()
+            if (wordText.isEmpty()) continue
+
             if (lastBlock != -1) {
                 if (word.blockIndex != lastBlock) {
                     sb.append("\n\n")
                 } else if (word.lineIndex != lastLine) {
                     sb.append("\n")
                 } else {
-                    sb.append(" ")
+                    val isPunctuationWithoutSpace = wordText in noLeadingSpacePunctuation || lastWordText in noTrailingSpacePunctuation
+                    if (!isPunctuationWithoutSpace) {
+                        sb.append(" ")
+                    }
                 }
             }
-            sb.append(word.text.trim())
+            sb.append(wordText)
             lastBlock = word.blockIndex
             lastLine = word.lineIndex
+            lastWordText = wordText
         }
 
         return sb.toString()
