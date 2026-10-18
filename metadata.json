@@ -1,0 +1,6 @@
+{
+  "name": "Smart OCR",
+  "description": "Smart OCR scanner with CameraX capture, Photo Picker, interactive text selection, and offline processing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

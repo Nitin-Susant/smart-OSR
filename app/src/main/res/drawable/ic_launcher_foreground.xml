@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Document Base Sheet -->
+    <path
+        android:fillColor="#1E293B"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="2.5"
+        android:pathData="M34,26 L64,26 L74,36 L74,82 L34,82 Z" />
+
+    <!-- Folded Corner -->
+    <path
+        android:fillColor="#0284C7"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="1.5"
+        android:pathData="M64,26 L64,36 L74,36 Z" />
+
+    <!-- Document Text Lines -->
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M40,42 L68,42 A1.5,1.5 0 0 1 68,45 L40,45 A1.5,1.5 0 0 1 40,42 Z" />
+    <path
+        android:fillColor="#FFB703"
+        android:pathData="M40,51 L62,51 A1.5,1.5 0 0 1 62,54 L40,54 A1.5,1.5 0 0 1 40,51 Z" />
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M40,60 L68,60 A1.5,1.5 0 0 1 68,63 L40,63 A1.5,1.5 0 0 1 40,60 Z" />
+    <path
+        android:fillColor="#94A3B8"
+        android:pathData="M40,69 L55,69 A1.5,1.5 0 0 1 55,72 L40,72 A1.5,1.5 0 0 1 40,69 Z" />
+
+    <!-- Scanner Target Reticle Brackets (OCR Frame) -->
+    <!-- Top-Left Bracket -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M28,36 L28,26 L38,26" />
+
+    <!-- Top-Right Bracket -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M70,26 L80,26 L80,36" />
+
+    <!-- Bottom-Left Bracket -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M28,72 L28,82 L38,82" />
+
+    <!-- Bottom-Right Bracket -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M70,82 L80,82 L80,72" />
+
+    <!-- Glowing Laser Scanner Line across active line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M26,52.5 L82,52.5" />
+
+    <!-- Selected Target Highlight Badge Dot -->
+    <path
+        android:fillColor="#FFB703"
+        android:pathData="M65,52.5 A3,3 0 1 1 59,52.5 A3,3 0 1 1 65,52.5 Z" />
+
+</vector>

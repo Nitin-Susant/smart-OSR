@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Smart OCR</string>
+    <string name="title_home">Smart OCR</string>
+    <string name="tagline_home">Precision text recognition and selective extraction</string>
+    <string name="action_take_photo">Take a Photo</string>
+    <string name="action_choose_image">Choose Image</string>
+    <string name="action_view_saved">Saved Clips</string>
+    <string name="camera_permission_required">Camera permission is required to take photos of documents.</string>
+    <string name="camera_permission_grant">Grant Permission</string>
+    <string name="capture_photo">Capture Photo</string>
+    <string name="retake_photo">Retake</string>
+    <string name="continue_to_ocr">Scan Document</string>
+    <string name="scanning_image">Recognizing text with on-device OCR…</string>
+    <string name="no_text_found">No text detected in this image. Try another angle or lighting.</string>
+    <string name="tap_to_select">Tap Select</string>
+    <string name="drag_to_select">Box Select</string>
+    <string name="select_all">Select All</string>
+    <string name="clear_selection">Clear</string>
+    <string name="confirm_selection">Extract Text</string>
+    <string name="copy_text">Copy Text</string>
+    <string name="copied_to_clipboard">Copied to clipboard!</string>
+    <string name="share_text">Share Text</string>
+    <string name="save_txt">Save as TXT</string>
+    <string name="save_to_history">Save Clip</string>
+    <string name="saved_success">Saved to clips history!</string>
+    <string name="return_to_image">Return to Image</string>
+</resources>

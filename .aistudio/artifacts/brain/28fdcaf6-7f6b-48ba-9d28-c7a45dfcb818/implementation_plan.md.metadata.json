@@ -1,0 +1,6 @@
+{
+  "summary": "Implementation plan for Smart OCR Scanner for Android, featuring CameraX capture, Photo Picker, ML Kit Text Recognition with hierarchical block/line/word parsing, interactive zoom/pan canvas with neon box highlighting, drag-to-select rectangle and tap-to-select, dedicated extracted text results screen with clipboard copy, TXT export, and saved clips history.",
+  "updatedAt": "2026-10-18T16:06:23.926261927Z",
+  "requestFeedback": true,
+  "userFacing": true
+}
